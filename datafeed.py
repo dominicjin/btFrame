@@ -1,53 +1,34 @@
 import pandas as pd
+from Indicator import *
 
-class DataFeed:
-    def __init__(self, filename):
-        self.data = pd.read_csv(filename, sep=',', index_col='Open time')  # 读取市场数据
-        self.index = 0  # 当前数据的位置
+class DataFeed(IndexCount):
+    def __init__(self, datafeed, assetName):
+        self.data = datafeed
+        self.asset = assetName
 
-    def next(self):
-        if self.index < len(self.data):
-            current_data = self.data.iloc[self.index]
-            self.index += 1
-            return current_data
-        return None
-
-class Indicator:
-    def __init__(self, datafeed, name):
-        self.datafeed = datafeed
-        self.name = name
-        self.data = pd.Series()
-        self.data.index = datafeed.index
-
-    def calculate(self):
-        raise NotImplementedError("subclasses should implement this method")
+    def close(self):
+        return SimpleIndicator('close', self.data['Close'])
     
-    def get_data(self):
-        return self.data
+    def open(self):
+        return SimpleIndicator('open', self.data['Open'])
+    
+    def volume(self):
+        return SimpleIndicator('volume', self.data['Volume'])
+    
+    def low(self):
+        return SimpleIndicator('low', self.data['Low'])
+    
+    def high(self):
+        return SimpleIndicator('high', self.data['High'])
+    
+    def total_value(self):
+        return SimpleIndicator('total_value', self.data['total_value'])
+    
 
-class SMA(Indicator):
-    def __init__(self, datafeed, period, pricetype):
-        super.__init__(datafeed, f"SMA_{period}")
-        self.period = period
-        self.pricetype = pricetype
+class SimpleIndicator(Indicator):
+    def __init__(self, name, datafeed:pd.Series):
+        super().__init__(name)
+        self.datafeed = datafeed
 
     def calculate(self):
-        self.data = self.datafeed[self.pricetype].rolling(windows=self.period).mean()
-
-class MACD(Indicator):
-    def __init__(self, datafeed, shortPeriod, longPeriod, pricetype, signalPeriod=9):
-        super.__init__(datafeed, f"MACD_{shortPeriod}_{longPeriod}")
-        self.shortPeriod = shortPeriod
-        self.longPeriod = longPeriod
-        self.pricetype = pricetype
-        self.signalPeriod = signalPeriod
-
-    def calculate(self):
-        short_ema = self.datafeed[self.pricetype].ewm(span=self.shortPeriod, adjust=False).mean()
-        long_ema = self.datafeed[self.pricetype].ewm(span=self.longPeriod, adjust=False).mean()
-        dif_ema = short_ema - long_ema
-        dea = dif_ema.rolling(window=self.signalPeriod).mean()
-        macd = dif_ema - dea        
-        self.data = macd
-
-        
+        self.data = self.datafeed
