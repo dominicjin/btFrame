@@ -28,9 +28,16 @@ class Indicator(IndexCount):
         return self.data
     
     def __getitem__(self, key):
+        
         current_key = self.get_index() + key
+        
         if current_key >= 0 and current_key < len(self.data):
             return self.data.iloc[current_key]
         else:
+            # print(f"magic key:{current_key}")
+            # print(f"len:{len(self.data)}")
             return False
-
+        
+    def __len__(self):
+        return len(self.data)
+            
