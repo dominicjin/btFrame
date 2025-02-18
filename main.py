@@ -14,6 +14,7 @@ def main():
     bt.add_dataFeed(spotDataFeed, futureDataFeed)
     bt.add_strategy(RSIStrategy)
     bt.run()
+    bt.plot()
     # print(bt.broker.orderInfo())
     return
 

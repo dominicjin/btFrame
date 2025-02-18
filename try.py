@@ -26,7 +26,20 @@
 # t = test()
 # t.get_param()
 
-a = {'asd':32, 'ax':53}
+# import pandas as pd
+# import matplotlib.pyplot as plt
 
-for value in a.values():
-    print(value)
+# df = pd.Series([6, 9, 5])
+
+# plt.plot(df.index, df.values)
+# plt.show()
+
+def func(*args, **kwargs):
+    # print(kwargs)
+    print("args:",args)
+    print("kwargs:",kwargs)
+    print("args[0]:",args[0])
+    print("kwargs['a']:",kwargs['a'])
+
+func(1,23,a=1, b=2)
+
