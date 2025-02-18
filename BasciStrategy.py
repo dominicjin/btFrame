@@ -1,19 +1,21 @@
 
 from Order import *
 from DataFeed import *
+from Position import *
+from Broker import *
 
 class BasicStrategy():
-    def __init__(self, broker, datafeed:list):
-        self.data = datafeed ##List
-        self.asset = [i.asset for i in datafeed]
-        self.broker = broker
+    def __init__(self, broker, datafeed:list[DataFeed]):
+        self.datas: list[DataFeed] = datafeed ##List
+        self.broker: Broker= broker
+        self.positions: dict[str, Position] = {}
         self.order_pending = []
+        self.value = list()
+        # self.position = Position()
 
     def next():
         raise NotImplementedError("You must implement the function")
     
-    def notifyOrder(self, order):
-        pass
 
     def addData(self, datafeed):
         if isinstance(datafeed, list):
@@ -21,8 +23,8 @@ class BasicStrategy():
         else:
             self.data.append(datafeed)
 
-    def buy(self, asset="123", quantity=None, price=None):
-        order = Order('BUY', asset, quantity, price)
+    def buy(self, asset, price=None, size=None):
+        order = Order('BUY', asset, size, price)
         self.order_pending.append(order)
         return order
 
@@ -33,23 +35,48 @@ class BasicStrategy():
         return order
 
     ## default: use first data current open price
-    def order_execute(self, order:Order, index=0, type='Open'):
-        order.status = 'Success'
+    def order_execute(self, order:Order, index=0):
+        order.status = 'success'
 
-        order.price = self.data[index].open[0]
+        ## default: open[0]
+        found = False
+        for _, data in enumerate(self.datas):
+            if order.asset == data.asset:
+                found = True
+                order.price = data.open[0]
+        if not found:
+            raise ValueError("not found value")
+
         if order.orderType == "BUY":
-            order.quantity = self.calculateQuantity(self.broker.get_cash(), order.price)
+            if not order.size:
+                order.size = self.calculateQuantity(self.broker.cash, order.price)
+            if order.asset not in self.positions:
+                self.positions[order.asset] = Position(order.asset, order.price, order.size)
+            else:
+                self.positions[order.asset].long_position(order.price, order.size)
+            self.broker.update_cash(-order.price * order.size)
+
         elif order.orderType == "SELL":
-            order.quantity = self.broker.position[order.asset]
+            if not order.size:
+                order.size = self.positions[order.asset].size
+            if order.asset not in self.positions:
+                self.positions[order.asset] = Position(order.asset, order.price, -order.size)
+            else:
+                self.positions[order.asset].short_position(order.price, order.size)
+            self.broker.update_cash(order.price * order.size)
+
+    def update_value(self, value):
+        self.value.append(value)
 
     @staticmethod
     def calculateQuantity(cash, price):
-        quantity = cash // price
-        value = price * quantity
+        size = cash // price
+        value = price * size
         index = 1
         while value <= 0.98 * cash:
+            print(cash, price)
             quantity = int(cash / price * 10 ** index) / (10 ** index)
-            value = price * quantity
+            value = price * size
             index += 1
-        return quantity
+        return size
         

@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-
+import pandas as pd
 
 class PlotData:
     def __init__(self):
@@ -9,7 +9,7 @@ class PlotData:
         """添加新的绘制数据"""
         self.data[name] = values
 
-    def get(self, name):
+    def get(self, name)->pd.Series:
         """获取指定名称的数据"""
         return self.data.get(name, None)
 

@@ -1,48 +1,49 @@
+from Order import *
+from Position import *
 
 class Broker:
-    def __init__(self, cash=0):
-        self.cash = cash  # 当前现金
-        self.stockValue = 0  # 当前持仓的市值
-        self.position ={}
+    def __init__(self):
+        self._cash = 0  # 当前现金
+        self._stockValue = 0  # 当前持仓的市值
         # self.position = False  # 是否持有仓位
-        self.order = []
+        self._order: list[Order]= list()
+        self.cerebo = None
 
-    def execute(self, order):
-        order_value = order.price * order.quantity
+    def set_cash(self, cash):
+        self._cash = cash
 
-        if order.orderType == "BUY":
-            self.cash -= order_value
-            self.stockValue += order_value
-            self.position[order.asset] = self.position.get(order.asset,0) + order.quantity
-        elif order.orderType == "SELL":
-            self.cash += order_value
-            self.stockValue -= order_value
-            self.position[order.asset] = self.position.get(order.asset,0) - order.quantity
+    def add_cash(self, cash):
+        self._cash += cash
 
-    def updateValue(self, price:dict):
-        self.stockValue = self.multiply_and_sum(price, self.position)
+    def update_stockValue(self, positions:dict[str, Position], price:dict):
 
-    @staticmethod
-    def multiply_and_sum(dict1, dict2):
-        # 初始化累加结果
-        result = 0
-        
-        # 遍历第一个字典的所有键
-        for key in dict1:
-            # 如果字典2中也有相同的键
-            if key in dict2:
-                # 相同键的值相乘并累加
-                result += dict1[key] * dict2[key]
-        
-        return result
+
+        currentValue = 0
+        for asset, position in positions.items():
+            if asset in price:
+                currentValue += position.size * price[asset]
+                position.update_price(price[asset])
+        # print("current stocks value", currentValue)
+        self._stockValue = currentValue
     
+    def update_cash(self, cash):
+        self._cash += cash
 
-    def get_totalValue(self):
-        return self.cash + self.stock_value
+    def add_order(self, order:Order):
+        self._order.append(order.orderInfo())
 
-    def get_cash(self):
-        return self.cash
+    def orderInfo(self):
+        return self._order
 
-    def get_stockValue(self):
-        return self.stockValue
+    @property
+    def value(self):
+        return self._cash + self._stockValue
+
+    @property
+    def cash(self):
+        return self._cash
+
+    @property
+    def stockValue(self):
+        return self._stockValue
 

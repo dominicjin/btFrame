@@ -19,7 +19,27 @@ class SMA(Indicator):
     def calculate(self):
         self.data = self.datafeed.rolling(window=self.period).mean()
     
-    
+class RSI(Indicator):
+    def __init__(self, datafeed:pd.Series, period=14):
+        super().__init__(f"RSI_{period}")
+        self.datafeed = datafeed
+        self.period = period
+        self.calculate()
+
+    def calculate(self):
+        delta = self.datafeed.diff()
+        gain = (delta.where(delta > 0, 0)).rolling(window=self.period).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(window=self.period).mean()
+
+        rs = gain / loss
+        rsi = 100 - (100 / (1 + rs))
+        self.data = rsi
+
+    def save_data(self, filename):
+        self.data.to_csv(filename)
+        
+
+
 
 
 class MACD(Indicator):

@@ -2,9 +2,9 @@ class Order:
     # static id
     order_id = 0
 
-    def __init__(self, orderType, asset, quantity=None, price=None):
+    def __init__(self, orderType, asset, price=None, size=None):
         self.orderType = orderType
-        self.quantity = quantity
+        self.size = size
         self.status = 'pending'
         self.price = price
         self.asset = asset
@@ -16,7 +16,7 @@ class Order:
         return {
             "orderId": Order.order_id,
             "orderType": self.orderType,
-            "quantity": self.quantity,
+            "quantity": self.size,
             "price" : self.price,
             "asset" : self.asset,
             "status": self.status,

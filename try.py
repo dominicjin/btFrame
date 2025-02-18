@@ -11,17 +11,22 @@
 # print(type(data.index[1]))
 # print(data.index[1])
 
-class test():
-    params = (('first', 2), ('second', 15))
-    def __init__(self):
-        pass
+# class test():
+#     params = (('first', 2), ('second', 15))
+#     def __init__(self):
+#         pass
 
-    def get_param(self):
-        print(self.params["first"])
-        return  
+#     def get_param(self):
+#         print(self.params["first"])
+#         return  
     
-    def params(self):
+#     def params(self):
         
 
-t = test()
-t.get_param()
+# t = test()
+# t.get_param()
+
+a = {'asd':32, 'ax':53}
+
+for value in a.values():
+    print(value)
