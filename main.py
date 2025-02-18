@@ -4,8 +4,8 @@ from cerebo import *
 
 
 def main():
-    spot = pd.read_csv("../biance_data_acquire/data/spot_BTCUSDT_1d.csv", sep=',', index_col='Open time')
-    future = pd.read_csv("../biance_data_acquire/data/future_BTCUSDT_1d.csv", sep=',', index_col='Open time')
+    spot = pd.read_csv("../../data_acquire/data/spot_BTCUSDT_1d.csv", sep=',', index_col='Open time')
+    future = pd.read_csv("../../data_acquire/data/future_BTCUSDT_1d.csv", sep=',', index_col='Open time')
 
     spotDataFeed = DataFeed("spot_BTC", spot)
     futureDataFeed = DataFeed("future_BTC", future)

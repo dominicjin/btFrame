@@ -14,7 +14,7 @@ class BasicStrategy():
         self.value = list()
         self.plot_manager = PlotManager()
         self.trade_signals = []  # 添加交易信号列表
-        self.signal_groups = ['RSI']  # 默认在RSI图上显示信号，子类可以修改这个列表
+        self.signal_groups = []  # 默认在RSI图上显示信号，子类可以修改这个列表
         # self.position = Position()
 
     def next():

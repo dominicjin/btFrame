@@ -34,12 +34,19 @@
 # plt.plot(df.index, df.values)
 # plt.show()
 
-def func(*args, **kwargs):
-    # print(kwargs)
-    print("args:",args)
-    print("kwargs:",kwargs)
-    print("args[0]:",args[0])
-    print("kwargs['a']:",kwargs['a'])
+# def func(*args, **kwargs):
+#     # print(kwargs)
+#     print("args:",args)
+#     print("kwargs:",kwargs)
+#     print("args[0]:",args[0])
+#     print("kwargs['a']:",kwargs['a'])
 
-func(1,23,a=1, b=2)
+# func(1,23,a=1, b=2)
+import pandas as pd
+import numpy as np
+
+df = pd.DataFrame([1,2,3,0,5], [6,0,8,9,10])
+df = df.replace(0, np.nan)
+df.inter
+print(df)
 

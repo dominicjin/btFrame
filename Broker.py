@@ -16,14 +16,11 @@ class Broker:
         self._cash += cash
 
     def update_stockValue(self, positions:dict[str, Position], price:dict):
-
-
         currentValue = 0
         for asset, position in positions.items():
             if asset in price:
                 currentValue += position.size * price[asset]
                 position.update_price(price[asset])
-        # print("current stocks value", currentValue)
         self._stockValue = currentValue
     
     def update_cash(self, cash):

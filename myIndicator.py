@@ -39,32 +39,24 @@ class RSI(Indicator):
         self.data.to_csv(filename)
         
 
-
-
-
 class MACD(Indicator):
-    def __init__(self, data:pd.Series, shortPeriod, longPeriod, signalPeriod=9):
+    def __init__(self, dataFeed:pd.Series, shortPeriod, longPeriod, signalPeriod=9):
         super().__init__(f"MACD_{shortPeriod}_{longPeriod}")
         self.shortPeriod = shortPeriod
         self.longPeriod = longPeriod
         self.signalPeriod = signalPeriod
-        self.data = data
+        self.dataFeed = dataFeed
         self.calculate()
     
 
     def calculate(self):
-        def ExpotentialAverage(data, period):
-            span = 2/(period+1)
-            ema = [data.iloc[0]]
-            for i in range(1,len(data)):
-                ema.append(ema[i-1] * (1 - span) + data.iloc[i] * span)    ## loc ==> label ; iloc ==> index ; series 加减 需要索引，type一致，不然需要 .value
-            ema_pd = pd.Series(ema)
-            return  ema_pd
-        short_ema = ExpotentialAverage(self.data, self.shortPeriod).ewm(span=self.shortPeriod, adjust=False).mean()
-        long_ema = ExpotentialAverage(self.data, self.longPeriod).ewm(span=self.longPeriod, adjust=False).mean()
+        # 直接使用 pandas 的 ewm
+        short_ema = self.dataFeed.ewm(span=self.shortPeriod, adjust=False).mean()
+        long_ema = self.dataFeed.ewm(span=self.longPeriod, adjust=False).mean()
         dif_ema = short_ema - long_ema
-        dea = dif_ema.rolling(window=self.signalPeriod).mean()
-        macd = dif_ema - dea        
+        dea = dif_ema.ewm(span=self.signalPeriod, adjust=False).mean()  # DEA 也应该用 EMA 而不是简单移动平均
+        macd = dif_ema - dea
+        macd.index = self.dataFeed.index        
         self.data = macd
 
 
@@ -104,21 +96,17 @@ class Crossover(Indicator):
 
 
 def main():
+    # 可以删除整个测试函数，或者保留但注释掉打印语句
     testlist = pd.Series([1,2,3,4,6,8,10])
     period = 3
     sma_3 = SMA(testlist, period)
-    print("hello")
-    print(sma_3[0], sma_3[3], sma_3[5], sma_3[20])
+    print("hello")  # 删除
+    print(sma_3[0], sma_3[3], sma_3[5], sma_3[20])  # 删除
     IndexCount.increment()
-    print(sma_3[0], sma_3[3], sma_3[5], sma_3[20])
+    print(sma_3[0], sma_3[3], sma_3[5], sma_3[20])  # 删除
     
     SMA.increment()
-
-    print(SMA.get_index())
-    # print(sma_3[0], sma_3[3], sma_3[5], sma_3[20])
-    # print(sma_3[-1], sma_3[-2], sma_3[5], sma_3[20])
-    # print(testlist.rolling(window=period).mean())
-    return 
+    print(SMA.get_index())  # 删除
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ class RSIStrategy(BasicStrategy):
 
 
         # 设置要显示交易信号的图表组
-        self.signal_groups = ['RSI', 'dif']  # 在RSI和价格图上都显示信号
+        self.signal_groups = ['Price Trend', 'RSI']  # 在价格图和RSI图上显示信号
         
         # Indicator
         self.dif = SimpleIndicator('dif', self.datas[0].data['Close'] - self.datas[1].data['Close'])
